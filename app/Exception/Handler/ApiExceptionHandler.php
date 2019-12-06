@@ -31,13 +31,11 @@ class ApiExceptionHandler extends AbstractHttpErrorHandler
      */
     public function handle(Throwable $except, Response $response): Response
     {
-
         $data = [
             'code'  => $except->getCode() != 0 ?$except->getCode():500,
             'message' => $except->getMessage(),
             'data'=>''
         ];
-
         return $response->withData($data);
     }
 }

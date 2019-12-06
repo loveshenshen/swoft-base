@@ -6,6 +6,9 @@ use App\Common\Memory;
 use App\Model\Entity\ConsumeDetail;
 use App\Model\Entity\User;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Consul\Agent;
+use Swoft\Consul\Health;
+use Swoft\Consul\KV;
 use Swoft\Crontab\Annotaion\Mapping\Cron;
 use Swoft\Crontab\Annotaion\Mapping\Scheduled;
 use Swoft\Db\DB;
@@ -23,6 +26,21 @@ use Swoft\Stdlib\Helper\JsonHelper;
  */
 class CronTask
 {
+    /**
+     * @Inject()
+     * @var Agent
+     */
+    public $agent;
+
+    /**
+     * @var KV
+     */
+    public $kv;
+
+    /**
+     * @var  Health
+     */
+    public $health;
 
     /**
      * @var Pool
@@ -32,7 +50,6 @@ class CronTask
     public $redis;
 
     /**
-     * @Cron("* * * * * *")
      * @throws
      */
     public function secondTask()
@@ -83,9 +100,41 @@ class CronTask
        }
     }
 
+
+    /**
+     * 每天执行一下 删除用户的历史消息
+     * @Cron("1 1 0 * * *")
+     * @throws
+     */
     public function minuteTask()
     {
-        CLog::info("minute task run: %s ", date('Y-m-d H:i:s', time()));
+        $userIds = $titles = DB::table('user')->pluck('id');
+        foreach ($userIds as $userId){
+            $scanKey  =  ConsumeDetail::getRedisKey($userId,ConsumeDetail::REDIS_TYPE_SCAN);
+            $payKey   =  ConsumeDetail::getRedisKey($userId,ConsumeDetail::REDIS_TYPE_SCAN);
+            if($this->redis->exists($scanKey) && $this->redis->zCard($scanKey) > ConsumeDetail::REDIS_LIST_HISTORY_NUM){
+                $this->redis->zRemRangeByRank($scanKey,ConsumeDetail::REDIS_LIST_HISTORY_NUM,-1);
+            }
+            if($this->redis->exists($payKey) && $this->redis->zCard($payKey) > ConsumeDetail::REDIS_LIST_HISTORY_NUM  ){
+                $this->redis->zRemRangeByRank($payKey,ConsumeDetail::REDIS_LIST_HISTORY_NUM,-1);
+            }
+        }
+        CLog::info("clear redis zset over...");
     }
+
+
+    /**
+     * @Cron("0/10 * * * * *")
+     * @throws
+     * */
+    public function  heartbeatCron(){
+//        consul 心跳检测
+//        $this->agent->passCheck("ws");
+
+    }
+
+
+
+
 
 }

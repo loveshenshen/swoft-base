@@ -53,7 +53,7 @@ return [
             \Swoft\View\Middleware\ViewMiddleware::class,
             \App\Http\Middleware\CorsMiddleware::class,
 //            \App\Http\Middleware\AuthMiddleware::class,
-            \App\Http\Middleware\HeaderMiddleware::class,
+//            \App\Http\Middleware\HeaderMiddleware::class,
 
             \App\Http\Middleware\ResponseMiddleware::class,
         ],
@@ -123,16 +123,21 @@ return [
         'on'      => [
             // Enable http handle
             SwooleEvent::REQUEST => bean(RequestListener::class),
+            SwooleEvent::TASK   => \bean(TaskListener::class),  // Enable task must task and finish event
+            SwooleEvent::FINISH => \bean(FinishListener::class)
+            /* @see HttpServer::$setting */
         ],
         'debug'   => 1,
         // 'debug'   => env('SWOFT_DEBUG', 0),
         /* @see WebSocketServer::$setting */
         'setting' => [
             'log_file' => alias('@runtime/swoole.log'),
+            'task_worker_num'       => 4,
+            'task_enable_coroutine' => true
         ],
         'process' => [
             //进程初始化
-//            'crontab' => bean(Swoft\Crontab\Process\CrontabProcess::class),
+            'crontab' => bean(Swoft\Crontab\Process\CrontabProcess::class),
             'pubsub' => bean(\App\Process\PubSubProcess::class)
         ],
     ],
@@ -149,4 +154,7 @@ return [
     'cliRouter'         => [
         // 'disabledGroups' => ['demo', 'test'],
     ],
+    'consul' => [
+        'host' => '127.0.0.1'
+    ]
 ];

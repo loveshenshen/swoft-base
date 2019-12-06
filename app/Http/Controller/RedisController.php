@@ -9,6 +9,8 @@ use Swlib\Http\ContentType;
 use Swlib\Saber;
 use Swlib\SaberGM;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Bean\BeanFactory;
+use Swoft\Consul\KV;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Redis\Exception\RedisException;
@@ -26,7 +28,12 @@ class RedisController
 
     /**
      * @Inject()
-     *
+     * @var KV
+     */
+    public $kv;
+
+    /**
+     * @Inject()
      * @var Pool
      */
     private $redis;
@@ -94,6 +101,16 @@ class RedisController
             $isError,
             1
         ];
+
+        $this->kv->put("/dev/redis/host",'127.0.0.1');
+        $this->kv->put("/dev/redis/port",'6379');
+        $result = $this->kv->get("/dev/redis/host")->getResult();
+
+        $value = $result[0]['Value'];
+        //需要base64解密
+        var_dump(base64_decode($value));
+
+
 
         return $data;
     }

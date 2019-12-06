@@ -44,6 +44,25 @@ class ConsumeDetail extends Model
 
     const REDIS_LIST_PAY_SCAN = "redis_list_pay_scan";
 
+
+    const REDIS_LIST_HISTORY_MESSAGE = "redis_list_history_message";
+    const REDIS_LIST_HISTORY_NUM = 300;
+
+    const REDIS_USER_SADD_KEY = 'redis_user_sAdd_key';
+
+    const REDIS_TYPE_SCAN = 'scan';
+    const REDIS_TYPE_PAY = 'pay';
+
+
+    /**
+     * @param string $type
+     * @param $userId
+     * @return string
+     */
+    public static function getRedisKey($userId,$type = self::REDIS_TYPE_PAY){
+        return self::REDIS_LIST_HISTORY_MESSAGE.'_'.$type.'_'.$userId;
+    }
+
     /**
      * 
      * @Id()

@@ -90,11 +90,18 @@ class   PubSubLogic
                         'nickanme'=>$json['nickname'],
                         'mobile'=>$json['mobile'],
                         'type'=>1,
-                        'status'=>2
+                        'status'=>2,
+                        'timestamp'=>time(),
                     ];
 
+                    $message = json_encode($resultData);
+
+                    $this->redis->zAdd(ConsumeDetail::getRedisKey($userId,ConsumeDetail::REDIS_TYPE_PAY),[
+                        $message=>time(),
+                    ]);
+
                     //消息推送
-                    server()->sendTo($fd,json_encode($resultData));
+                    server()->sendTo($fd,$message);
                     $consumeDetail->setIsPush(1);
                     $consumeDetail->save();
                     DB::commit();
@@ -121,11 +128,14 @@ class   PubSubLogic
                         'nickname'=>$json['nickname'],
                         'mobile'=>$json['mobile'],
                         'type'=>2,
-                        'status'=>1
-
+                        'status'=>1,
+                        'timestamp'=>time(),
                     ];
-
-                    server()->sendTo($fd,json_encode($resultData));
+                    $resultMessage = json_encode($resultData);
+                    $this->redis->zAdd(ConsumeDetail::getRedisKey($userId,ConsumeDetail::REDIS_TYPE_SCAN),[
+                        $resultMessage=>time(),
+                    ]);
+                    server()->sendTo($fd,$resultMessage);
                     break;
                 default:
                     CLog::info("类型不正确");

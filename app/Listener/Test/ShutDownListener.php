@@ -4,6 +4,8 @@
 namespace App\Listener\Test;
 
 
+use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Consul\Agent;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -20,12 +22,18 @@ use Swoft\Server\SwooleEvent;
 class ShutDownListener implements EventHandlerInterface
 {
     /**
+     * @Inject()
+     * @var  Agent
+     */
+    public $agent;
+    /**
      * @param EventInterface $event
+     * @throws
      */
     public function handle(EventInterface $event): void
     {
-        $context = context();
-
-        CLog::info(' Shut down context=' . get_class($context));
+        //取消注册ws
+//        $this->agent->deregisterService('ws');
+        CLog::info("deregister server...");
     }
 }

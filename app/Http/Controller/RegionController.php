@@ -29,7 +29,7 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 /**
  * Class RegionController
  *
- * @Controller(prefix="/region")
+ * @Controller(prefix="/v1/region")
  * @package App\Http\Controller
  */
 class RegionController

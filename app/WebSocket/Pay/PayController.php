@@ -6,11 +6,14 @@ use App\Common\Memory;
 use App\Model\Entity\User;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Context\Context;
+use Swoft\Log\Helper\CLog;
 use Swoft\Log\Helper\Log;
 use Swoft\Redis\Pool;
 use Swoft\Session\Session;
+use Swoft\Task\Task;
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
+use yii\queue\db\InfoAction;
 
 /**
  * Class PayController
@@ -68,9 +71,13 @@ class PayController
                     "is_online"=>User::IS_ONLINE_ON
                 ]);
 
+                $this->response(200,"Login Success.","");
+                //投递任务
+                $result = Task::co("userMessage","push",[$user->getUserId(),$fd]);
+                CLog::info('co task.....'.$result);
                 //redis 实现
 //                $this->redis->hSet(\App\Model\Entity\User::REDIS_USER_FD,strval($user->getUserId()),strval($fd));
-                $this->response(200,"Login Success.","");
+
             }
         }
     }
