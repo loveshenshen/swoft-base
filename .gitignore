@@ -5,7 +5,13 @@
 .idea/
 .git/
 runtime/
-vendor/
+/vendor/*
+!/vendor/alipay
+!/vendor/aliyuncs
+!/vendor/wxpay
+!/vendor/wechat
+!/vendor/wxencrypt
+
 *.lock
 .phpintel/
 .env
