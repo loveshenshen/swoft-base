@@ -8,6 +8,7 @@ use App\Model\Entity\User;
 use App\WebSocket\BaseController;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Context\Context;
+use Swoft\Http\Server\Annotation\Mapping\Middleware;
 use Swoft\Log\Helper\CLog;
 use Swoft\Log\Helper\Log;
 use Swoft\Redis\Pool;
@@ -17,6 +18,7 @@ use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
 use App\WebSocket\Middleware\CorsMiddleware;
 use Swoft\WebSocket\Server\Message\Request;
+use App\WebSocket\Middleware\PayMiddleware;
 
 /**
  * Class PayController
@@ -24,6 +26,7 @@ use Swoft\WebSocket\Server\Message\Request;
  * @WsController()
  *
  */
+//@WsController(middlewares={PayMiddleware::class})
 class PayController extends BaseController
 {
     /**
@@ -34,17 +37,17 @@ class PayController extends BaseController
     /**
      * Message command is: 'pay.index'
      *
-     * @return int
+     * @return mixed
      * @MessageMapping("status")
      * @throws
      */
-    public function status(): void
+    public function status():array
     {
         //监听redis 的队列 若有数据则直接推送给前端
-
-        $user = User::first();
-
-        $this->send(['name'=>'1','age'=>'shen','user'=>$user,'heartbeat'=>server()->getSwooleServer()->heartbeat()]);
+        $lastError = server()->getSwooleServer()->getLastError();
+        $data =  ['name'=>'1','age'=>'shen','heartbeat'=>$lastError];
+        //若有中间件则使用中间件
+        $this->send($data);
     }
 
     /**
