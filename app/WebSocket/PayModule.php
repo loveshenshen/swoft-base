@@ -26,7 +26,7 @@ use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
-use Swoft\WebSocket\Server\MessageParser\JsonParser;
+use App\WebSocket\JsonParser;
 use Swoole\WebSocket\Server;
 use function server;
 

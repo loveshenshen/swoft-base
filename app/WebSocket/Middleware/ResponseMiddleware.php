@@ -31,16 +31,15 @@ class ResponseMiddleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {
-        $start = '>before ';
         CLog::info('before handle');
-
         $resp = $handler->handle($request);
-
-
-
-        $resp->setData($start . $resp->getData() . ' after>');
-
         CLog::info('after handle');
+        //所有的接口返回数据调解
+        $data = $resp->getData();
+        $resp->setData([
+            'data'=>$data,
+            'code'=>200
+        ]);
         return $resp;
     }
 }

@@ -16,17 +16,14 @@ use Swoft\Session\Session;
 use Swoft\Task\Task;
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
-use App\WebSocket\Middleware\CorsMiddleware;
-use Swoft\WebSocket\Server\Message\Request;
-use App\WebSocket\Middleware\PayMiddleware;
+use App\WebSocket\Middleware\ResponseMiddleware;
 
 /**
  * Class PayController
  *
- * @WsController()
+ * @WsController(middlewares={ResponseMiddleware::class})
  *
  */
-//@WsController(middlewares={PayMiddleware::class})
 class PayController extends BaseController
 {
     /**
@@ -47,7 +44,8 @@ class PayController extends BaseController
         $lastError = server()->getSwooleServer()->getLastError();
         $data =  ['name'=>'1','age'=>'shen','heartbeat'=>$lastError];
         //若有中间件则使用中间件
-        $this->send($data);
+//        $this->send($data);
+        return $data;
     }
 
     /**
