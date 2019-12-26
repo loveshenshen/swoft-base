@@ -64,7 +64,7 @@ return [
     'db'                => [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=car;host=114.55.92.151',
-        'username' => 'super',
+        'username' => 'root',
         'password' => 'super!@#',
     ],
     'db.pool'          => [
@@ -122,7 +122,7 @@ return [
         'port'    => 8308,
         'on'      => [
             // Enable http handle
-            SwooleEvent::REQUEST => bean(RequestListener::class),
+//            SwooleEvent::REQUEST => bean(RequestListener::class),
             SwooleEvent::TASK   => \bean(TaskListener::class),  // Enable task must task and finish event
             SwooleEvent::FINISH => \bean(FinishListener::class)
             /* @see HttpServer::$setting */

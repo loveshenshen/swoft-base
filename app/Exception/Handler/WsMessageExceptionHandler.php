@@ -9,6 +9,7 @@ use Swoft\Log\Helper\Log;
 use Swoft\WebSocket\Server\Exception\Handler\AbstractMessageErrorHandler;
 use Swoole\WebSocket\Frame;
 use Throwable;
+use App\Exception\UserException;
 use function server;
 use const APP_DEBUG;
 
@@ -30,16 +31,15 @@ class WsMessageExceptionHandler extends AbstractMessageErrorHandler
      */
     public function handle(Throwable $e, Frame $frame): void
     {
-        $message = sprintf('%s At %s line %d', $e->getMessage(), $e->getFile(), $e->getLine());
-
-        Log::error('Ws server error(%s)', $message);
-
         // Debug is false
-        if (!APP_DEBUG) {
-            server()->push($frame->fd, $e->getMessage());
-            return;
+        if (APP_DEBUG) {
+            $message = sprintf('%s At %s line %d', $e->getMessage(), $e->getFile(), $e->getLine());
+            Log::error('Ws server error(%s)', $message);
         }
-
-        server()->push($frame->fd, $message);
+        $messages = [
+            'code'=>$e->getCode(),
+            'message'=>$e->getMessage(),
+        ];
+        server()->push($frame->fd, json_encode($messages));
     }
 }

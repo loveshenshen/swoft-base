@@ -3,7 +3,9 @@
 namespace App\WebSocket\Pay;
 
 use App\Common\Memory;
+use App\Exception\UserException;
 use App\Model\Entity\User;
+use App\WebSocket\BaseController;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Context\Context;
 use Swoft\Log\Helper\CLog;
@@ -13,14 +15,16 @@ use Swoft\Session\Session;
 use Swoft\Task\Task;
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
-use yii\queue\db\InfoAction;
+use App\WebSocket\Middleware\CorsMiddleware;
+use Swoft\WebSocket\Server\Message\Request;
 
 /**
  * Class PayController
  *
  * @WsController()
+ *
  */
-class PayController
+class PayController extends BaseController
 {
     /**
      * @Inject()
@@ -30,18 +34,17 @@ class PayController
     /**
      * Message command is: 'pay.index'
      *
-     * @return void
+     * @return int
      * @MessageMapping("status")
      * @throws
      */
     public function status(): void
     {
         //监听redis 的队列 若有数据则直接推送给前端
-        $request = Context::get()->getRequest();
 
-        $fd = $request->getFd();
+        $user = User::first();
 
-        $this->response(200,$request->getRawData(),"");
+        $this->send(['name'=>'1','age'=>'shen','user'=>$user,'heartbeat'=>server()->getSwooleServer()->heartbeat()]);
     }
 
     /**
@@ -52,57 +55,35 @@ class PayController
      */
     public function auth($data):void
     {
+        $memory = Memory::getInstance();
         $request = Context::get()->getRequest();
-        $data = $request->getMessage()->getData();
-        if(!isset($data["token"])){
-            $this->response(500,[],"Token in valid");
-        }else{
+//        $fd = Session::mustGet()->getFd();
+        $fd = $request->getFd();
+        $userId = Memory::getUserId($fd);
+        if(!$userId){
+            $data = $request->getMessage()->getData();
+            if(!isset($data["token"])){
+                throw new UserException('Token in valid');
+            }
             $user = \App\Model\Entity\UserDevice::where("access_token",$data["token"])->first();
             if(!$user){
-                $this->response(500,[],"Token in valid");
-            }else{
-                $fd = $request->getFd();
-                $memory = Memory::getInstance();
-                $memory->set(strval($user->getUserId()),[
-                    'fd'=>$fd,
-                    'user_id'=>$user->getUserId()
-                ]);
-                \App\Model\Entity\User::find($user->getUserId())->update([
-                    "is_online"=>User::IS_ONLINE_ON
-                ]);
-
-                $this->response(200,"Login Success.","");
-                //投递任务
-                $result = Task::co("userMessage","push",[$user->getUserId(),$fd]);
-                CLog::info('co task.....'.$result);
-                //redis 实现
-//                $this->redis->hSet(\App\Model\Entity\User::REDIS_USER_FD,strval($user->getUserId()),strval($fd));
-
+                throw new UserException('Token in valid');
             }
+            $memory->set(strval($user->getUserId()),[
+                'fd'=>$fd,
+                'user_id'=>$user->getUserId()
+            ]);
+            \App\Model\Entity\User::find($user->getUserId())->update([
+                "is_online"=>User::IS_ONLINE_ON
+            ]);
+           $userId = $user->getUserId();
+           CLog::info("Find database....");
         }
+        $this->send("Login Success.");
+        //投递任务
+        $result = Task::co("userMessage","push",[$userId,$fd]);
+        CLog::info('co task.....'.$result);
+        //redis 实现
+//     $this->redis->hSet(\App\Model\Entity\User::REDIS_USER_FD,strval($user->getUserId()),strval($fd));
     }
-
-    /**
-     * @param $code
-     * @param mixed $data
-     * @param $message
-     */
-    public function response($code,$data,$message){
-
-        if($code == 200){
-            $resultData = [
-                'code'=>$code,
-                'data'=>$data
-            ];
-        }else{
-            $resultData = [
-                'code'=>$code,
-                'message'=>$message
-            ];
-        }
-        Session::mustGet()->push(json_encode($resultData));
-    }
-
-
-
 }

@@ -41,4 +41,30 @@ class Memory
         }
     }
 
+    /**
+     * @param int $fd
+     * @return int
+     */
+    public static function getUserId($fd):int
+    {
+         foreach (self::$table as $value){
+             if($value['fd'] == $fd){
+                 return $value['user_id'];
+             }
+         }
+         return 0;
+    }
+
+    /**
+     * @param $fd
+     */
+    public static function delete($fd):void
+    {
+       $userId = self::getUserId($fd);
+       if($userId){
+           self::$table->del(strval($userId));
+       }
+    }
+
+
 }

@@ -71,15 +71,6 @@ class PayModule
     public function onClose(Server $server, int $fd):void
     {
         //清理内存表的
-        $table = Memory::getInstance();
-        foreach ($table as $value){
-             if($value['fd'] == $fd){
-                 $table->del($value['user_id']);
-                 \App\Model\Entity\User::find($value['user_id'])->update([
-                     "is_online"=>User::IS_ONLINE_OFF
-                 ]);
-             }
-        }
-
+        Memory::delete($fd);
     }
 }

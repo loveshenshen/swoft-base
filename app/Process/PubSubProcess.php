@@ -33,7 +33,6 @@ use Swoft\Process\UserProcess;
  */
 class PubSubProcess extends UserProcess
 {
-
     /**
      * @Inject()
      * @var PubSubLogic
