@@ -34,7 +34,7 @@ class ResponseMiddleware implements MiddlewareInterface
         CLog::info('before handle');
         $resp = $handler->handle($request);
         CLog::info('after handle');
-        //所有的接口返回数据调解
+        //所有的接口返回数据调整
         $data = $resp->getData();
         $resp->setData([
             'data'=>$data,

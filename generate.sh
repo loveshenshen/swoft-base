@@ -1,0 +1,1 @@
+php bin/swoft generate:entity
