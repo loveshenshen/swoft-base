@@ -122,7 +122,8 @@ return [
         'port'    => 8308,
         'on'      => [
             // Enable http handle
-//            SwooleEvent::REQUEST => bean(RequestListener::class),
+            //处理http请求
+            SwooleEvent::REQUEST => bean(RequestListener::class),
             SwooleEvent::TASK   => \bean(TaskListener::class),  // Enable task must task and finish event
             SwooleEvent::FINISH => \bean(FinishListener::class)
             /* @see HttpServer::$setting */
@@ -134,6 +135,10 @@ return [
             'log_file' => alias('@runtime/swoole.log'),
             'task_worker_num'       => 4,
             'task_enable_coroutine' => true
+        ],
+        'listener' => [
+            'rpc' => bean('rpcServer'),
+
         ],
         'process' => [
             //进程初始化

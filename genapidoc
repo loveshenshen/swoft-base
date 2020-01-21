@@ -1,0 +1,3 @@
+#! /bin/bash
+cd ./doc/apidoc/
+apidoc -i ../../app/Http/Controller -o ../../public/api/

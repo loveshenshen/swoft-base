@@ -169,6 +169,26 @@ class UserController{
     }
 
 
+    /**
+     * @api {get} /user/test  用户测试接口
+     * @apiGroup User
+     *
+     * @apiParam {int} name  名称
+     * @apiSuccessExample 成功返回
+     *
+     * {
+         "data":1,
+     *   "code":200
+     * }
+     *
+     */
+    /**
+     * @RequestMapping("test",method={RequestMethod::GET})
+     */
+    public function test():int
+    {
+        return 1;
+    }
 
 
 

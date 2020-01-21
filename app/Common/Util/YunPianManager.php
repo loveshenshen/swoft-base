@@ -24,8 +24,8 @@ class YunPianManager {
      * @return boolean|string
      */
     public static function sendSMS($mobile, $content) {
-        if(empty($mobile) || YII_DEBUG) {
-            return;
+        if(empty($mobile) ) {
+            return false;
         }
         $data = json_decode( self::send_sms( self::$apikey, $content, $mobile ), true );
         if( $data ['code'] == 0 ) {

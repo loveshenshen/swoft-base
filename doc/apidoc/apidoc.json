@@ -1,0 +1,11 @@
+{
+    "name": "swoftAPI文档",
+    "version": "0.1.0",
+    "description": "swoftAPI文档",
+    "url" : "/v1",
+    "title": "swoftAPI文档",
+    "header": {
+        "title": "General",
+        "filename": "header.md"
+    }
+}
