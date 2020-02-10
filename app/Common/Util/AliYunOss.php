@@ -17,8 +17,8 @@ use Sts\Request\V20150401\AssumeRoleRequest;
 use Cloudauth\Request\V20180916 as cloudauth; //请以实际目录为准
 class AliYunOss
 {
-    private static  $accessKeyId = 'LTAIs8cqwQ4DvU8r';  //LTAIn8nJADwEkTiF
-    private static  $accessKeySecret = 'cx8xtByzcYb7BDDbaiOkrofPEJP9Gn '; //WvIEOwQ1Bg6ANxMNTKHsmtbjruJTD9
+    private static  $accessKeyId = '';  //
+    private static  $accessKeySecret = ''; //
     private static  $bucket = 'car-repair';
 
     /**

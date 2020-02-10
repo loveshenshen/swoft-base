@@ -2,7 +2,7 @@ Swoft Base 基础架构
 
 ``` 
   需要php 版本 >= 7.1
-  swoole 版本 >=4.3 最好是最新的4.7
+  swoole 版本 >=4.3 最好是最新的4.4.15
   目前有的功能
   swoft原生的协程 
   mysql连接池
@@ -16,4 +16,7 @@ Swoft Base 基础架构
   可以用作rpc，tcp,微服务，websocket等
   接口限流，熔断
   异步任务，定时任务
+  apidoc 生成api文档 静态需配置nginx 路由来实现api访问(也可用swoft来代理,建议直接用nginx代理)
+  ws中间件 推送以api接口类似形式返回
+  自动生成entity实体 
 ```
