@@ -41,9 +41,9 @@ class RpcController
      */
     public function getList(): array
     {
-        $result  = $this->userService->getList(12, 'type');
-        $result2 = $this->userService2->getList(12, 'type');
 
+        $result  = $this->userService->getList(12,'type');
+        $result2 = $this->userService2->getList(12, 'type');
         return [$result, $result2];
     }
 

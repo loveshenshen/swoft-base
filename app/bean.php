@@ -101,7 +101,7 @@ return [
     'user'              => [
         'class'   => ServiceClient::class,
         'host'    => '127.0.0.1',
-        'port'    => 18307,
+        'port'    => 18309,
         'setting' => [
             'timeout'         => 0.5,
             'connect_timeout' => 1.0,
@@ -116,6 +116,7 @@ return [
     ],
     'rpcServer'         => [
         'class' => ServiceServer::class,
+        'port'=>8309
     ],
     'wsServer'          => [
         'class'   => WebSocketServer::class,
